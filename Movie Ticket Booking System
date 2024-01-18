@@ -1,0 +1,189 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int NUM_ROWS = 5;
+const int NUM_COLS = 10;
+
+class Movie
+{
+public:
+    string title;
+    float ticketPrice;
+
+    Movie(string t, float price)
+    {
+        title = t;
+        ticketPrice = price;
+    }
+};
+
+class Seat
+{
+public:
+    bool isBooked;
+
+    Seat()
+    {
+        isBooked = false;
+    }
+};
+
+class Booking
+{
+public:
+    string movieTitle;
+    int row, col;
+    float totalCost;
+
+    Booking(string title, int r, int c, float cost)
+    {
+        movieTitle = title;
+        row = r;
+        col = c;
+        totalCost = cost;
+    }
+};
+
+class BookingSystem
+{
+private:
+    vector<vector<Seat>> seats;
+    vector<Movie> movies;
+    vector<Booking> bookings;
+
+public:
+    BookingSystem()
+    {
+        seats.resize(NUM_ROWS, vector<Seat>(NUM_COLS));
+        movies.push_back(Movie("Leo", 150.0));
+        movies.push_back(Movie("Salaar", 200.0));
+        movies.push_back(Movie("12th Fail", 180.0));
+    }
+
+    void displayMovies()
+    {
+        system("CLS");
+        cout << "Available Movies:\n";
+        for (size_t i = 0; i < movies.size(); ++i)
+        {
+            cout << i + 1 << ". " << movies[i].title << " (Rs" << fixed << setprecision(2) << movies[i].ticketPrice << ")\n";
+        }
+    }
+
+    void displaySeats()
+    {
+        system("CLS");
+        cout << "Seat Map:\n";
+        for (int i = 0; i < NUM_ROWS; ++i)
+        {
+            for (int j = 0; j < NUM_COLS; ++j)
+            {
+                if (seats[i][j].isBooked)
+                {
+                    cout << "X ";
+                }
+                else
+                {
+                    cout << "O ";
+                }
+            }
+            cout << endl;
+        }
+    }
+
+    void bookTicket()
+    {
+        displayMovies();
+
+        int movieChoice;
+        cout << "Select a movie (1-" << movies.size() << "): ";
+        cin >> movieChoice;
+
+        if (movieChoice < 1 || movieChoice > movies.size())
+        {
+            cout << "Invalid movie selection.\n";
+            return;
+        }
+
+        int selectedRow, selectedCol;
+        displaySeats();
+        cout << "Enter row and column for seat selection (e.g., 2 5): ";
+        cin >> selectedRow >> selectedCol;
+
+        if (selectedRow < 1 || selectedRow > NUM_ROWS || selectedCol < 1 || selectedCol > NUM_COLS)
+        {
+            cout << "Invalid seat selection.\n";
+            return;
+        }
+
+        if (seats[selectedRow - 1][selectedCol - 1].isBooked)
+        {
+            cout << "Seat already booked. Please choose another seat.\n";
+            return;
+        }
+
+        float totalCost = movies[movieChoice - 1].ticketPrice;
+        cout << "Ticket booked successfully! Total cost: Rs" << fixed << setprecision(2) << totalCost << endl;
+
+        seats[selectedRow - 1][selectedCol - 1].isBooked = true;
+
+        bookings.push_back(Booking(movies[movieChoice - 1].title, selectedRow, selectedCol, totalCost));
+    }
+
+    void showTicket()
+    {
+        system("CLS");
+        if (bookings.empty())
+        {
+            cout << "No bookings made yet.\n";
+            return;
+        }
+
+        cout << "Booked Tickets:\n";
+        for (size_t i = 0; i < bookings.size(); ++i)
+        {
+            cout << "Booking " << i + 1 << ": " << bookings[i].movieTitle << ", Row: " << bookings[i].row << ", Col: " << bookings[i].col << ", Cost: Rs" << fixed << setprecision(2) << bookings[i].totalCost << "\n";
+        }
+    }
+};
+
+int main()
+{
+    BookingSystem bookingSystem;
+
+    int choice;
+    do
+    {
+        system("CLS");
+        cout << "\nOptions:\n1. Display Movies\n2. Book Ticket\n3. Show Tickets\n4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            bookingSystem.displayMovies();
+            system("pause");
+            break;
+        case 2:
+            bookingSystem.bookTicket();
+            system("pause");
+            break;
+        case 3:
+            bookingSystem.showTicket();
+            system("pause");
+            break;
+        case 4:
+            cout << "Exiting program.\n";
+            exit(0);
+            break;
+        default:
+            cout << "Invalid choice. Please try again.\n";
+            system("pause");
+            break;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
